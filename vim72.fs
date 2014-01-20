@@ -15,30 +15,30 @@ let crctab =
 let crc32 c b =
   crctab.[((int c ^^^ b) &&& 0xff)] ^^^ (c >>> 8)
 
-(* "of the ninety-six bits of internal state, eight bits of key0 affect key1; eight bits of key1 affect key2; and fourteen bits of key2 affect the output stream byte." *)
-let ``InitialKeyZero``= 0x12345678L
-let ``InitialKeyOne`` = 0x23456789L
-let ``InitialKeyTwo`` = 0x34567890L
-let ``KeyOneSecretK`` = 0x08088405L
-
-
-let ``all possible initial key0`` = 
-  [32..127] |> Seq.map (crc32 ``InitialKeyZero``)
-
-let ``all possible initial key1`` = 
-  ``all possible initial key0``
-  |> Seq.map (fun key0 -> ((key0 &&& 0xffL) + ``InitialKeyOne``) * ``KeyOneSecretK`` + 1L)
-
-let ``all possible initial key2`` = 
-  ``all possible initial key1``
-  |> Seq.map (fun key1 -> crc32 ``InitialKeyTwo`` (int key1 >>> 24))
-
-let x =
-  Seq.zip3 ``all possible initial key0`` ``all possible initial key1`` ``all possible initial key2``
-  
-(* All possible keys before updateKey is called for the first time *)
-let ``all possible initial keys`` = 
-  [| for (k1,k2,k3) in x do yield [| k1;k2;k3 |] |]
+//(* "of the ninety-six bits of internal state, eight bits of key0 affect key1; eight bits of key1 affect key2; and fourteen bits of key2 affect the output stream byte." *)
+//let ``InitialKeyZero``= 0x12345678L
+//let ``InitialKeyOne`` = 0x23456789L
+//let ``InitialKeyTwo`` = 0x34567890L
+//let ``KeyOneSecretK`` = 0x08088405L
+//
+//
+//let ``all possible initial key0`` = 
+//  [32..127] |> Seq.map (crc32 ``InitialKeyZero``)
+//
+//let ``all possible initial key1`` = 
+//  ``all possible initial key0``
+//  |> Seq.map (fun key0 -> ((key0 &&& 0xffL) + ``InitialKeyOne``) * ``KeyOneSecretK`` + 1L)
+//
+//let ``all possible initial key2`` = 
+//  ``all possible initial key1``
+//  |> Seq.map (fun key1 -> crc32 ``InitialKeyTwo`` (int key1 >>> 24))
+//
+//let x =
+//  Seq.zip3 ``all possible initial key0`` ``all possible initial key1`` ``all possible initial key2``
+//  
+//(* All possible keys before updateKey is called for the first time *)
+//let ``all possible initial keys`` = 
+//  [| for (k1,k2,k3) in x do yield [| k1;k2;k3 |] |]
 
 
 // will always return <255
